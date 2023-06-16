@@ -141,10 +141,7 @@ ULONG CalculateFunctionStackSizeWrapper(PVOID ReturnAddress)
     }
 
     // [1] Locate RUNTIME_FUNCTION for given Function.
-    pRuntimeFunction = RtlLookupFunctionEntry(
-        (DWORD64)ReturnAddress,
-        &ImageBase,
-        pHistoryTable);
+    pRuntimeFunction = RtlLookupFunctionEntry((DWORD64)ReturnAddress, &ImageBase, pHistoryTable);
     if (NULL == pRuntimeFunction)
     {
         status = STATUS_ASSERTION_FAILURE;
@@ -189,69 +186,64 @@ int main() {
     p.Gadget_ss = CalculateFunctionStackSizeWrapper(p.trampoline);
     
     // 0 stack args
+    
     for (int i = 0; i < 2; i++)
     {
-        p.Function = Sleep;
-        printf("[+] Iteration %d\n", i);
-        Spoof(4000, NULL, NULL, NULL, &p, (PVOID)0);
-        printf("[+] Returning to 0x%llx\n", _ReturnAddress());
+        Spoof("[+] Iteration %d\n", i, NULL, NULL, &p, pPrintf, (PVOID)0);
+        Spoof(4000, NULL, NULL, NULL, &p, Sleep, (PVOID)0);
+        Spoof("[+] Returning to 0x%llx\n", _ReturnAddress(), NULL, NULL, &p, pPrintf, (PVOID)0);
     }
     
     // 1 stack arg
     
     for (int i = 0; i < 500; i++)
     {
-        p.Function = VirtualAllocEx;
-        PVOID alloc = Spoof((PVOID)(-1), 0, 1024, MEM_COMMIT | MEM_RESERVE, &p, (PVOID)1, (PVOID)PAGE_EXECUTE_READWRITE);
+        PVOID alloc = Spoof((PVOID)(-1), 0, 1024, MEM_COMMIT | MEM_RESERVE, &p, VirtualAllocEx, (PVOID)1, (PVOID)PAGE_EXECUTE_READWRITE);
         
-        p.Function = pPrintf;
-        Spoof("[+] Allocated to 0x%llx\n", alloc, NULL, NULL, &p, (PVOID)0);
+        Spoof("[+] Allocated to 0x%llx\n", alloc, NULL, NULL, &p, pPrintf, (PVOID)0);
     }
 
     // 2 stack arg
     
+    PVOID pNtAllocateVirtualMemory = GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtAllocateVirtualMemory");
     for (int i = 0; i < 500; i++)
     {
-        p.Function = GetProcAddress(LoadLibraryA("ntdll.dll"), "NtAllocateVirtualMemory");
         PVOID alloc = NULL;
         SIZE_T size = 1024;
         PVOID base = NULL;
-        Spoof((PVOID)(-1), &alloc, NULL, &size, &p, (PVOID)2, (PVOID)(MEM_COMMIT | MEM_RESERVE), (PVOID)PAGE_EXECUTE_READWRITE);
+        Spoof((PVOID)(-1), &alloc, NULL, &size, &p, pNtAllocateVirtualMemory, (PVOID)2, (PVOID)(MEM_COMMIT | MEM_RESERVE), (PVOID)PAGE_EXECUTE_READWRITE);
 
-        p.Function = pPrintf;
-        Spoof("[+] NtAllocated to 0x%llx\n", alloc, NULL, NULL, &p, (PVOID)0);
+        Spoof("[+] NtAllocated to 0x%llx\n", alloc, NULL, NULL, &p, pPrintf, (PVOID)0);
     }
     
     // indirect syscall
+
     p.ssn = 0x18;
     for (int i = 0; i < 500; i++)
     {
-        p.Function = GetProcAddress(LoadLibraryA("ntdll.dll"), "NtAllocateVirtualMemory");
-        p.Function = (PBYTE)p.Function + 0x12;
         PVOID alloc = NULL;
         SIZE_T size = 1024;
         PVOID base = NULL;
-        Spoof((PVOID)(-1), &alloc, NULL, &size, &p, (PVOID)2, (PVOID) (MEM_COMMIT | MEM_RESERVE), (PVOID) PAGE_EXECUTE_READWRITE);
-
-        p.Function = pPrintf;
-        Spoof("[+] Indirectly Allocated to 0x%llx\n", alloc, NULL, NULL, &p, (PVOID)0);
+        Spoof((PVOID)(-1), &alloc, NULL, &size, &p, (PBYTE)pNtAllocateVirtualMemory + 0x12, (PVOID)2, (PVOID) (MEM_COMMIT | MEM_RESERVE), (PVOID) PAGE_EXECUTE_READWRITE);
+        
+        Spoof("[+] Indirectly Allocated to 0x%llx\n", alloc, NULL, NULL, &p, pPrintf, (PVOID)0);
     }
-    p.Function = gets_s;
+    
+    // gets
     char* buffer = malloc(50);
     size_t size = 50;
-    Spoof(buffer, size, NULL, NULL, &p, (PVOID) 0);
+    Spoof(buffer, size, NULL, NULL, &p, gets_s, (PVOID) 0);
     
     int e = 0;
     int f = 0;
     int g = 0;
     
     /* Testing if stack args get modified */
-    p.Function = bruh;
-    Spoof((PVOID)0, (PVOID)0, (PVOID)0, (PVOID)0, &p, (PVOID)3, &e, &f, &g);
-    printf("e: %d\n", e);
-    printf("f: %d\n", f);
-    printf("g: %d\n", g);
+    Spoof((PVOID)0, (PVOID)0, (PVOID)0, (PVOID)0, &p, bruh, (PVOID)3, &e, &f, &g);
+    Spoof("e: %d\n", e, NULL, NULL, &p, pPrintf, (PVOID)0);
+    Spoof("f: %d\n", f, NULL, NULL, &p, pPrintf, (PVOID)0);
+    Spoof("g: %d\n", g, NULL, NULL, &p, pPrintf, (PVOID)0);
     
-    printf("Cya\n");
+    Spoof("Cya\n",NULL, NULL, NULL, &p, pPrintf, (PVOID)0);
     return 0; 
 }
