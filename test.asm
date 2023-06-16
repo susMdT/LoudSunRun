@@ -7,9 +7,10 @@ Spoof proc
 
     pop    r12                         ; Real return address in r12
     mov    rdi, [rsp + 32]             ; Storing struct in the rdi
+    mov    rsi, [rsp + 40]             ; Storing function to call
 
     xor r11, r11            ; r11 will hold the # of args that have been "pushed"
-    mov r13, [rsp + 28h]    ; r13 will hold the # of args total that will be pushed
+    mov r13, [rsp + 30h]     ; r13 will hold the # of args total that will be pushed
 
     mov r14, 200h           ; r14 will hold the offset we need to push shit
     add r14, 8
@@ -19,7 +20,7 @@ Spoof proc
     sub r14, 20h            ; first stack arg is located at +0x28 from rsp, so we sub 0x20 from the offset. Loop will sub 0x8 each time
 
     mov r10, rsp            
-    add r10, 28h            ; offset of stack arg added to rsp
+    add r10, 30h            ; offset of stack arg added to rsp
 
     looping:
 
@@ -92,7 +93,8 @@ Spoof proc
     mov    r10, [rdi + 80]             ; Trampoline moved into r10
     mov    [rsp], r10                  ; Return address will now be our Trampoline
 
-    mov    r10, [rdi + 88]             ; Function we want to call is moved to r10
+    mov    r11, rsi                    ; Copying function to call into r11
+
     mov    [rdi + 8], r12              ; Real return address is now moved into the "OG_retaddr" member
     mov    [rdi + 16], rbx             ; original rbx is stored into "rbx" member
     lea    rbx, [fixup]                ; Fixup address is moved into rbx
@@ -102,7 +104,6 @@ Spoof proc
     ; ----------------------------------------------------------------------
     ; Syscall shit. Shouldn't affect performance even if a syscall isnt made
     ; ----------------------------------------------------------------------
-    mov    r11, r10
     mov    r10, rcx
     mov    rax, [rdi + 72]
     
