@@ -134,11 +134,9 @@ Spoof proc
         mov     rcx, rbx
 
         add     rsp, 200h           ; Big frame thing
-        add     rsp, 8              ; 0 that we pushed
         add     rsp, [rbx + 48]     ; Stack size
         add     rsp, [rbx + 32]     ; Stack size
         add     rsp, [rbx + 56]     ; Stack size
-        sub     rsp, 20h            ; Stack args offset
 
         mov     rbx, [rcx + 16]     ; Restoring OG RBX
         mov rdi, [rcx + 24]         ; ReStoring OG rdi
