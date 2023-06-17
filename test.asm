@@ -59,13 +59,14 @@ Spoof proc
     sub    rsp, 200h
 
     ; ----------------------------------------------------------------------
-    ; Pushing a 0 to cut off the return addresses after RtlUserThreadStart
+    ; Pushing a 0 to cut off the return addresses after RtlUserThreadStart.
+    ; Need to figure out why this cuts off the call stack
     ; ----------------------------------------------------------------------
 
     push 0
 
     ; ----------------------------------------------------------------------
-    ; RtlUserThreadStrat + 0x14  frame
+    ; RtlUserThreadStart + 0x14  frame
     ; ----------------------------------------------------------------------
     
     sub    rsp, [rdi + 56]
@@ -85,13 +86,12 @@ Spoof proc
     ; ----------------------------------------------------------------------
     
     sub    rsp, [rdi + 48]
+    mov    r11, [rdi + 80]
+    mov    [rsp], r11
 
     ; ----------------------------------------------------------------------
-    ; Namazso ret addr spoofing
+    ; Adjusting the param struct for the fixup
     ; ----------------------------------------------------------------------
-
-    mov    r10, [rdi + 80]             ; Trampoline moved into r10
-    mov    [rsp], r10                  ; Return address will now be our Trampoline
 
     mov    r11, rsi                    ; Copying function to call into r11
 
