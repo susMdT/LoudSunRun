@@ -109,6 +109,7 @@ I have not done extensive testing with this. I only called a few functions and t
 Please reach out to me so I can learn cause I'm dumb as fuck. Godspeed.
 
 ## Credits
-namazso - Return Address Spoofing
-klezvirus - SilentMoonWalk 
-william-burgess - Vulcan Raven
+5pider - Gadget Finder code  
+namazso - Return Address Spoofing  
+klezvirus - SilentMoonWalk (for Frame funky things)  
+william-burgess - Vulcan Raven (for finding stack wrapper)
