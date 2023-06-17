@@ -6,8 +6,28 @@ NtWait proto
 Spoof proc
 
     pop    r12                         ; Real return address in r12
+
+    mov    r10, rdi                    ; Store OG rdi in r10
+    mov    r11, rsi                    ; Store OG rsi in r11
+
     mov    rdi, [rsp + 32]             ; Storing struct in the rdi
     mov    rsi, [rsp + 40]             ; Storing function to call
+
+    ; ---------------------------------------------------------------------
+    ; Storing our original registers
+    ; ---------------------------------------------------------------------
+
+    mov [rdi + 24], r10                ; Storing OG rdi into param
+    mov [rdi + 88], r11                ; Storing OG rsi into param
+    mov [rdi + 96], r12                ; Storing OG r12 into param
+    mov [rdi + 104], r13                ; Storing OG r13 into param
+    mov [rdi + 112], r14                ; Storing OG r14 into param
+    mov [rdi + 120], r15                ; Storing OG r15 into param
+
+
+    ; ---------------------------------------------------------------------
+    ; Prepping to move stack args
+    ; ---------------------------------------------------------------------
 
     xor r11, r11            ; r11 will hold the # of args that have been "pushed"
     mov r13, [rsp + 30h]     ; r13 will hold the # of args total that will be pushed
@@ -120,7 +140,13 @@ Spoof proc
         add     rsp, [rbx + 56]     ; Stack size
         sub     rsp, 20h            ; Stack args offset
 
-        mov     rbx, [rcx + 16]
+        mov     rbx, [rcx + 16]     ; Restoring OG RBX
+        mov rdi, [rcx + 24]         ; ReStoring OG rdi
+        mov rsi, [rcx + 88]         ; ReStoring OG rsi
+        mov r12, [rcx + 96]         ; ReStoring OG r12
+        mov r13, [rcx + 104]        ; ReStoring OG r13 
+        mov r14, [rcx + 112]        ; ReStoring OG r14
+        mov r15, [rcx + 120]        ; ReStoring OG r15 
         jmp     QWORD ptr [rcx + 8]
 
 Spoof endp
