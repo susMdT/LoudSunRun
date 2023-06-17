@@ -104,7 +104,7 @@ Spoof((PVOID)INFINITE, NULL, NULL, NULL, &p, Sleep, (PVOID)0);
 Sleep(2000);
 ```
 ## Concerns
-I have not done extensive testing with this. I only called a few functions and tried a local shellcode injection. Could be some edge cases I haven't considered. Also I don't have a huge background in this stuff, so there could be some inaccuracies. The r10-r15, rdi, and rsi are not restored cause I was too lazy to implement that.
+I have not done extensive testing with this. I only called a few functions and tried a local shellcode injection. Could be some edge cases I haven't considered. Also I don't have a huge background in this stuff, so there could be some inaccuracies.
 
 Please reach out to me so I can learn cause I'm dumb as fuck. Godspeed.
 
