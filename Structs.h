@@ -14,6 +14,11 @@ typedef struct
     PVOID       RUTS_retaddr;      // 64
     PVOID       ssn;               // 72  
     PVOID       trampoline;        // 80
+    PVOID       rsi;               // 88
+    PVOID       r12;               // 96
+    PVOID       r13;               // 104
+    PVOID       r14;               // 112
+    PVOID       r15;               // 120
 } PRM, * PPRM;
 
 /* God Bless Vulcan Raven*/
