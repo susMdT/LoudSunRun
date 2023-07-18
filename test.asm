@@ -32,7 +32,7 @@ Spoof proc
     xor r11, r11            ; r11 will hold the # of args that have been "pushed"
     mov r13, [rsp + 30h]     ; r13 will hold the # of args total that will be pushed
 
-    mov r14, 200h           ; r14 will hold the offset we need to push shit
+    mov r14, 200h           ; r14 will hold the offset we need to push stuff
     add r14, 8
     add r14, [rdi + 56]     ; stack size of RUTS
     add r14, [rdi + 48]     ; stack size of BTIT
@@ -73,7 +73,7 @@ Spoof proc
     finish:
 
     ; ----------------------------------------------------------------------
-    ; Creating a big ass 320 byte working space
+    ; Creating a big 320 byte working space
     ; ----------------------------------------------------------------------
 
     sub    rsp, 200h
@@ -122,7 +122,7 @@ Spoof proc
     mov    rbx, rdi                    ; Address of param struct (Fixup) is moved into rbx
 
     ; ----------------------------------------------------------------------
-    ; Syscall shit. Shouldn't affect performance even if a syscall isnt made
+    ; Syscall stuff. Shouldn't affect performance even if a syscall isnt made
     ; ----------------------------------------------------------------------
     mov    r10, rcx
     mov    rax, [rdi + 72]
