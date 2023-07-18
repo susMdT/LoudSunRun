@@ -1,11 +1,11 @@
 # LoudSunRun
-My shitty attempt at tampering with the callstack based on the work of namazso, SilentMoonWalk, and VulcanRaven
+Stack Spoofing with Synthetic frames based on the work of namazso, SilentMoonWalk, and VulcanRaven
 
 ## Why?
-Wanted to see how this magic shit worked and slapped random shit together. I think it works but don't quote me. All I do is stare at process hacker and go brr
+Learning purposes
 
 ## Overview
-There are a few steps this abomination of c/asm does
+There are a few steps this program does
 
 1. Allocate args on stack
 2. Generate fake frames
@@ -20,7 +20,7 @@ To perform these, a param struct is passed as arg 5 and the number of stack args
 * the address we want our fake frames to show on the call stack
 * a SSN for syscalls (if included/ommited for non indirect syscalls, it does not affect anything)
 
-The total stack size of the fake frames is calculated and the stack args are moved accordingly. A 0 is pushed onto the stack (which somehow cuts off the rest of the call stack??). 
+The total stack size of the fake frames is calculated and the stack args are moved accordingly. A 0 is pushed onto the stack. This cuts off the stack walk. 
 
 Frames are then added, but in reverse order of appearence on the stack. They are planted like so  
 
@@ -47,11 +47,11 @@ PVOID ReturnAddress = NULL;
 PRM p = { 0 };
 NTSTATUS status = STATUS_SUCCESS;
 
-//just find a JMP RBX gadget. Can look anywhere. I chose k32
+// just find a JMP RBX gadget. Can look anywhere. I chose k32
 p.trampoline = FindGadget((LPBYTE)GetModuleHandle(L"kernel32.dll"), 0x200000); 
 printf("[+] Gadget is at 0x%llx\n", p.trampoline);
 
-// Would walk export table but am lazy
+// You should probably walk the export table, but this is quick and easy.
 ReturnAddress = (PBYTE)(GetProcAddress(LoadLibraryA("kernel32.dll"), "BaseThreadInitThunk")) + 0x14; 
 p.BTIT_ss = CalculateFunctionStackSizeWrapper(ReturnAddress);
 p.BTIT_retaddr = ReturnAddress;
@@ -104,9 +104,9 @@ Spoof((PVOID)INFINITE, NULL, NULL, NULL, &p, Sleep, (PVOID)0);
 Sleep(2000);
 ```
 ## Concerns
-I have not done extensive testing with this. I only called a few functions and tried a local shellcode injection. Could be some edge cases I haven't considered. Also I don't have a huge background in this stuff, so there could be some inaccuracies.
+I have not done extensive testing with this. I only called a few functions and tried a local shellcode injection. There could be some edge cases I haven't tested. 
 
-Please reach out to me so I can learn cause I'm dumb as fuck. Godspeed.
+Please reach out to me for any comments and such. Godspeed.
 
 ## Credits
 5pider - Gadget Finder code  
