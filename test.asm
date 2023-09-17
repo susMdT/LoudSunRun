@@ -5,7 +5,7 @@ NtWait proto
 
 Spoof proc
 
-    pop    r12                         ; Real return address in r12
+    pop    rax                         ; Real return address in rax
 
     mov    r10, rdi                    ; Store OG rdi in r10
     mov    r11, rsi                    ; Store OG rsi in r11
@@ -24,6 +24,7 @@ Spoof proc
     mov [rdi + 112], r14                ; Storing OG r14 into param
     mov [rdi + 120], r15                ; Storing OG r15 into param
 
+    mov r12, rax                       ; OG code used r12 for ret addr
 
     ; ---------------------------------------------------------------------
     ; Prepping to move stack args
