@@ -111,5 +111,5 @@ Please reach out to me for any comments and such. Godspeed.
 ## Credits
 5pider - Gadget Finder code  
 namazso - Return Address Spoofing  
-klezvirus - SilentMoonWalk (for Frame funky things)  
+klezvirus, waldoirc, trickster0 - SilentMoonWalk (for Frame funky things)  
 william-burgess - Vulcan Raven (for finding stack wrapper)
